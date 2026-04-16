@@ -560,10 +560,8 @@
 <canvas id="particles"></canvas>
 
 <!-- Music toggle -->
-<div class="music-toggle" id="musicToggle" title="Música">🎵</div>
-<audio id="bgMusic" loop>
-  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-</audio>
+<div class="music-toggle" id="musicToggle" title="Música">🔇</div>
+<audio id="bgMusic" loop src="https://cdn.pixabay.com/download/audio/2022/10/14/audio_1eb4ef6f77.mp3?filename=romantic-piano-119232.mp3"></audio>
 
 <!-- ── INTRO ── -->
 <section id="intro">
@@ -589,32 +587,37 @@
 
 <!-- ── MEMORIES ── -->
 <section id="memories">
-  <div class="memories-title scroll-reveal">Desde el primer momento…</div>
+  <div class="memories-title scroll-reveal">Lo que siento por ti, Amor…</div>
   <div class="section-divider"></div>
 
   <div class="memory-card scroll-reveal" style="transition-delay: 0.1s">
-    <p class="memory-text">"Desde que llegaste a mi vida, todo cambió. No lo noté de golpe… fue poco a poco, y ya no pude parar."</p>
+    <p class="memory-text">"Hay días en que te veo y me duele el pecho de lo bonita que eres. No sé si es amor o qué es, mami, pero me tiene completamente perdido en ti."</p>
     <span class="memory-emoji">🌙</span>
   </div>
 
   <div class="memory-card scroll-reveal" style="transition-delay: 0.2s">
-    <p class="memory-text">"Contigo todo se siente más real, mami. Más bonito. Más mío."</p>
-    <span class="memory-emoji">🌸</span>
-  </div>
-
-  <div class="memory-card scroll-reveal" style="transition-delay: 0.3s">
-    <p class="memory-text">"No sé cómo le hiciste, pero me tienes bien enamorado, Paula. Bien bien."</p>
+    <p class="memory-text">"A veces me imagino el futuro y siempre estás ahí. No lo pienso, simplemente apareces. Como si mi cabeza ya supiera que sin ti no tiene sentido nada."</p>
     <span class="memory-emoji">💫</span>
   </div>
 
+  <div class="memory-card scroll-reveal" style="transition-delay: 0.3s">
+    <p class="memory-text">"Me gusta cuando eres tu misma. Me gusta cuando me mandas memes a las 2am. Me gusta todo de ti, mami. Todo. Hasta lo que tú ni sabes que tiene."</p>
+    <span class="memory-emoji">🌸</span>
+  </div>
+
   <div class="memory-card scroll-reveal" style="transition-delay: 0.4s">
-    <p class="memory-text">"Eres mi persona favorita, mi amor. Y eso no es algo que se diga así nomás."</p>
+    <p class="memory-text">"Podría escribir mil páginas de lo que siento y seguiría faltándome palabras. Eso me pasa contigo, mi amor. Me dejas sin palabras. Y eso nunca me había pasado."</p>
     <span class="memory-emoji">💜</span>
   </div>
 
   <div class="memory-card scroll-reveal" style="transition-delay: 0.5s">
-    <p class="memory-text">"No hay nadie más con quien quiera vivir estas cosas. Sólo contigo."</p>
+    <p class="memory-text">"No quiero a nadie más. No pienso en nadie más. Mi cabeza, mi corazón, mis ganas de dar lo mejor de mí… todo eso ya tiene nombre, mami. Y se llama Paula."</p>
     <span class="memory-emoji">❤️</span>
+  </div>
+
+  <div class="memory-card scroll-reveal" style="transition-delay: 0.6s">
+    <p class="memory-text">"Sé que no soy perfecto. Sé que a veces la cago. Pero lo que sí sé con todo, es que nunca voy a querer a alguien como te quiero a ti. Eso no cambia. Eso no se va."</p>
+    <span class="memory-emoji">🔥</span>
   </div>
 </section>
 
@@ -624,8 +627,8 @@
 
   <div class="video-wrapper scroll-reveal">
     <iframe
-      src="https://www.youtube.com/embed/UKwWMkFTVp4?si=YfP7U1IVqL4UVICJ"
-      title="Enculado - Yukun ft. Nsqk"
+      src="https://www.youtube.com/embed/Wznz-tSnv38?si=tltDaPTm8DknJRYd"
+      title="Canción especial para Paula"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowfullscreen>
     </iframe>
@@ -640,7 +643,7 @@
 <section id="question">
   <div class="question-pre scroll-reveal">Y entonces…</div>
   <div class="question-main scroll-reveal" id="questionText">
-    Paula… mami ❤️<br>
+    Amor… mami ❤️<br>
     ¿quieres ser mi novia otra vez…<br>
     pero ahora aún más en serio?
   </div>
@@ -854,18 +857,50 @@ function sayYes() {
   }, 800);
 }
 
-// ── MUSIC TOGGLE ──
+// ── MUSIC AUTOPLAY WITH FADE IN ──
 const music = document.getElementById('bgMusic');
 const musicBtn = document.getElementById('musicToggle');
 let playing = false;
 
-musicBtn.addEventListener('click', () => {
+function startMusicFadeIn() {
+  music.volume = 0;
+  music.play().then(() => {
+    playing = true;
+    musicBtn.textContent = '🔇';
+    // Gradually raise volume over 6 seconds
+    let vol = 0;
+    const target = 0.35;
+    const step = target / 120; // ~120 steps over 6s (50ms each)
+    const fadeInterval = setInterval(() => {
+      vol = Math.min(vol + step, target);
+      music.volume = vol;
+      if (vol >= target) clearInterval(fadeInterval);
+    }, 50);
+  }).catch(() => {
+    // Autoplay blocked — wait for first user interaction
+    const unlockAudio = () => {
+      startMusicFadeIn();
+      document.removeEventListener('touchstart', unlockAudio);
+      document.removeEventListener('click', unlockAudio);
+    };
+    document.addEventListener('touchstart', unlockAudio, { once: true });
+    document.addEventListener('click', unlockAudio, { once: true });
+  });
+}
+
+// Try autoplay as soon as possible
+window.addEventListener('load', () => {
+  setTimeout(startMusicFadeIn, 800);
+});
+
+musicBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
   if (playing) {
     music.pause();
     musicBtn.textContent = '🎵';
     playing = false;
   } else {
-    music.volume = 0.25;
+    music.volume = 0.35;
     music.play().catch(() => {});
     musicBtn.textContent = '🔇';
     playing = true;
